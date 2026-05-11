@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -245,7 +246,7 @@
 </div>
 
 <script>
-var AIRTABLE_TOKEN = 'YOUR_TOKEN_HERE';
+var AIRTABLE_TOKEN = 'patUguceJXQeULJhV';
 var AIRTABLE_BASE = 'appnW28KnOAO9UI9K';
 var AIRTABLE_TABLE = 'tblWZWMZNWfpbVVRX';
 
@@ -311,7 +312,7 @@ async function handleSubmit() {
   try {
     var resp = await fetch('https://api.airtable.com/v0/'+AIRTABLE_BASE+'/'+AIRTABLE_TABLE,{
       method:'POST',
-      headers:{'Authorization':'Bearer '+patUguceJXQeULJhV,'Content-Type':'application/json'},
+      headers:{'Authorization':'Bearer '+AIRTABLE_TOKEN,'Content-Type':'application/json'},
       body:JSON.stringify({fields:fields})
     });
     if(resp.ok){
