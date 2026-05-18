@@ -184,24 +184,20 @@
       const list = document.getElementById('patientList');
       list.style.display = 'flex';
       list.innerHTML = '<div class="loading">Loading patients...</div>';
-
-      try {
-        const res = await fetch(
-          `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_ID}`,
-          { headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}` } }
-        );
+try {
+        const res = await fetch('https://rose-proxy.vercel.app/api/patients');
         const data = await res.json();
         list.innerHTML = '';
-        data.records.forEach(record => {
-          const name = record.fields['Preferred Name'] || record.fields['Patient Full Name'] || 'Unknown';
+        data.patients.forEach(patient => {
           const btn = document.createElement('button');
           btn.className = 'patient-btn';
-          btn.textContent = name;
-          btn.onclick = () => launchRose(record.id, name);
+          btn.textContent = patient.name;
+          btn.onclick = () => launchRose(patient.id, patient.name);
           list.appendChild(btn);
         });
       } catch (e) {
         list.innerHTML = '<div class="loading">Error loading patients. Please try again.</div>';
+      }
       }
     }
 
