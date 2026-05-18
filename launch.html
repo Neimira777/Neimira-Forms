@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neimira — Visit with Rose</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #F5F6F8;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    .logo-area {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .logo-title {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 6px;
+      text-transform: uppercase;
+      color: #1A237E;
+    }
+
+    .logo-tagline {
+      font-size: 12px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #00BCD4;
+      margin-top: 6px;
+    }
+
+    .mode-container {
+      width: 100%;
+      max-width: 600px;
+    }
+
+    .mode-card {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+
+    .mode-card h2 {
+      color: #1A237E;
+      font-size: 20px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .mode-card p {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    /* Patient List */
+    .patient-list {
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .patient-btn {
+      background: linear-gradient(135deg, #00BCD4, #2979FF);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 16px 24px;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+
+    .patient-btn:hover {
+      transform: translateY(-2px);
+      opacity: 0.9;
+    }
+
+    /* Home mode button */
+    .visit-btn {
+      background: linear-gradient(135deg, #00BCD4, #2979FF);
+      color: white;
+      border: none;
+      border-radius: 16px;
+      padding: 20px 48px;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: transform 0.2s, opacity 0.2s;
+      width: 100%;
+    }
+
+    .visit-btn:hover {
+      transform: translateY(-2px);
+      opacity: 0.9;
+    }
+
+    .loading {
+      color: #999;
+      font-size: 14px;
+      margin-top: 12px;
+    }
+
+    .rose-img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 20px;
+      border: 3px solid #00BCD4;
+    }
+
+    .divider {
+      text-align: center;
+      color: #ccc;
+      font-size: 12px;
+      letter-spacing: 2px;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="logo-area">
+    <div class="logo-title">Neimira</div>
+    <div class="logo-tagline">AI Companion Technology</div>
+  </div>
+
+  <div class="mode-container">
+
+    <!-- FACILITY MODE -->
+    <div class="mode-card" id="facilityCard">
+      <h2>Facility</h2>
+      <p>Select a patient to begin their session with Rose.</p>
+      <div class="patient-list" id="patientList">
+        <div class="loading">Loading patients...</div>
+      </div>
+      <button class="visit-btn" id="loadPatientsBtn" onclick="loadPatients()">
+        Load Patients
+      </button>
+    </div>
+
+    <div class="divider">— OR —</div>
+
+    <!-- HOME MODE -->
+    <div class="mode-card" id="homeCard">
+      <h2>Home</h2>
+      <p>Welcome back. Rose is ready for your visit.</p>
+      <button class="visit-btn" onclick="launchHome()">
+        Visit with Rose 🌹
+      </button>
+    </div>
+
+  </div>
+
+  <script>
+    const AIRTABLE_TOKEN = 'YOUR_AIRTABLE_TOKEN';
+    const AIRTABLE_BASE_ID = 'appnW28KnOAO9UI9K';
+    const AIRTABLE_TABLE_ID = 'tblWZWMZNWfpbVVRX';
+    const HOME_PATIENT_ID = 'recMLLC4fJHBUhE5w';
+    const DID_AGENT_ID = 'v2_agt_LZBI4lcW';
+    const DID_CLIENT_KEY = 'ck_-MqtRhwe5B0Gqmpm3oow5';
+
+    async function loadPatients() {
+      document.getElementById('loadPatientsBtn').style.display = 'none';
+      const list = document.getElementById('patientList');
+      list.style.display = 'flex';
+      list.innerHTML = '<div class="loading">Loading patients...</div>';
+
+      try {
+        const res = await fetch(
+          `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_ID}`,
+          { headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}` } }
+        );
+        const data = await res.json();
+        list.innerHTML = '';
+        data.records.forEach(record => {
+          const name = record.fields['Preferred Name'] || record.fields['Patient Full Name'] || 'Unknown';
+          const btn = document.createElement('button');
+          btn.className = 'patient-btn';
+          btn.textContent = name;
+          btn.onclick = () => launchRose(record.id, name);
+          list.appendChild(btn);
+        });
+      } catch (e) {
+        list.innerHTML = '<div class="loading">Error loading patients. Please try again.</div>';
+      }
+    }
+
+    function launchHome() {
+      launchRose(HOME_PATIENT_ID, 'your loved one');
+    }
+
+    function launchRose(patientId, name) {
+      const url = `https://agent.d-id.com/?agentId=${DID_AGENT_ID}&clientKey=${DID_CLIENT_KEY}&patientId=${patientId}`;
+      window.location.href = url;
+    }
+  </script>
+
+</body>
+</html>
