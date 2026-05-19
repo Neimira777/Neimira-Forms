@@ -204,7 +204,7 @@ const HOME_PATIENT_ID = 'recMLLC4fJHBUhE5w';
     }
 
     function launchRose(patientId, name) {
-      const url = `https://agent.d-id.com/?agentId=${DID_AGENT_ID}&clientKey=${DID_CLIENT_KEY}&patientId=${patientId}`;
+     const url = `https://agent.d-id.com/${DID_AGENT_ID}?clientKey=${DID_CLIENT_KEY}&patientId=${patientId}`;
       window.location.href = url;
     }
     
