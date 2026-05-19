@@ -174,8 +174,7 @@
 
   <script>
     
-
-    const HOME_PATIENT_ID = 'recMLLC4fJHBUhE5w';
+const HOME_PATIENT_ID = 'recMLLC4fJHBUhE5w';
     const DID_AGENT_ID = 'v2_agt_LZBI4lcW';
     const DID_CLIENT_KEY = 'ck_-MqtRhwe5B0Gqmpm3oow5';
 
@@ -184,7 +183,7 @@
       const list = document.getElementById('patientList');
       list.style.display = 'flex';
       list.innerHTML = '<div class="loading">Loading patients...</div>';
-try {
+      try {
         const res = await fetch('https://rose-proxy.vercel.app/api/patients');
         const data = await res.json();
         list.innerHTML = '';
@@ -198,7 +197,6 @@ try {
       } catch (e) {
         list.innerHTML = '<div class="loading">Error loading patients. Please try again.</div>';
       }
-      
     }
 
     function launchHome() {
@@ -209,6 +207,8 @@ try {
       const url = `https://agent.d-id.com/?agentId=${DID_AGENT_ID}&clientKey=${DID_CLIENT_KEY}&patientId=${patientId}`;
       window.location.href = url;
     }
+    
+
   </script>
 
 </body>
