@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -111,7 +112,6 @@
       letter-spacing: 2px;
       margin: 10px 0;
     }
-    /* Spotify player */
     #spotify-player {
       display: none;
       background: white;
@@ -165,7 +165,6 @@
     <div class="logo-tagline">AI Companion Technology</div>
   </div>
 
-  <!-- Spotify Player UI -->
   <div class="mode-container">
     <div id="spotify-player">
       <h3>🎵 Now Playing</h3>
@@ -180,7 +179,6 @@
 
   <div class="mode-container" id="selectionScreen">
 
-    <!-- FACILITY MODE -->
     <div class="mode-card">
       <h2>Facility</h2>
       <p>Select a patient to begin their session with Rose.</p>
@@ -194,7 +192,6 @@
 
     <div class="divider">— OR —</div>
 
-    <!-- HOME MODE -->
     <div class="mode-card">
       <h2>Home</h2>
       <p>Welcome back. Rose is ready for your visit.</p>
@@ -205,7 +202,6 @@
 
   </div>
 
-  <!-- D-ID Agent -->
   <script type="module"
     src="https://agent.d-id.com/v2/index.js"
     data-mode="fabio"
@@ -218,7 +214,6 @@
     data-open-mode="expanded">
   </script>
 
-  <!-- Spotify Web Playback SDK -->
   <script src="https://sdk.scdn.co/spotify-player.js"></script>
 
   <script>
@@ -277,31 +272,60 @@
       }
     }
 
-    // ── Play a song by URI or search query ──
-    async function spotifyPlay(uriOrQuery) {
-      if (!spotifyDeviceId) return;
+    // ── Play by search query ──
+    async function spotifyPlayBySearch(query) {
       try {
-        const res = await fetch('https://rose-proxy.vercel.app/api/spotify-token', {
+        const tokenRes = await fetch('https://rose-proxy.vercel.app/api/spotify-token', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ patientId: currentPatientId })
         });
-        const data = await res.json();
+        const tokenData = await tokenRes.json();
+        const access_token = tokenData.access_token;
+        if (!access_token) return;
 
-        const body = uriOrQuery.startsWith('spotify:')
-          ? JSON.stringify({ uris: [uriOrQuery] })
-          : JSON.stringify({ uris: [] });
+        const searchRes = await fetch(
+          'https://api.spotify.com/v1/search?q=' + encodeURIComponent(query) + '&type=track&limit=1',
+          { headers: { 'Authorization': 'Bearer ' + access_token } }
+        );
+        const searchData = await searchRes.json();
+        const uri = searchData.tracks?.items?.[0]?.uri;
+        if (!uri) {
+          console.log('No track found for:', query);
+          return;
+        }
 
-        await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${spotifyDeviceId}`, {
+        await fetch('https://api.spotify.com/v1/me/player/play?device_id=' + spotifyDeviceId, {
           method: 'PUT',
           headers: {
-            'Authorization': 'Bearer ' + data.access_token,
+            'Authorization': 'Bearer ' + access_token,
             'Content-Type': 'application/json'
           },
-          body
+          body: JSON.stringify({ uris: [uri] })
         });
+
+        console.log('Playing:', query);
       } catch (e) {
-        console.error('Spotify play error:', e);
+        console.error('Spotify search play error:', e);
+      }
+    }
+
+    // ── Listen for Rose's messages ──
+    function setupDIDMessageListener() {
+      if (window.DID_AGENTS_API) {
+        window.DID_AGENTS_API.events.on('agent-message', (data) => {
+          const text = data?.content || data?.message || data?.text || '';
+          console.log('Rose said:', text);
+          const match = text.match(/PLAY_MUSIC:([^\n]+)/);
+          if (match && spotifyDeviceId) {
+            const query = match[1].trim();
+            console.log('Music trigger detected:', query);
+            spotifyPlayBySearch(query);
+          }
+        });
+        console.log('D-ID message listener set up');
+      } else {
+        setTimeout(setupDIDMessageListener, 1000);
       }
     }
 
@@ -342,6 +366,7 @@
     function launchRose(patientId) {
       currentPatientId = patientId;
       initSpotify(patientId);
+      setupDIDMessageListener();
       const agent = document.querySelector('[data-name="did-agent"]');
       if (agent) {
         agent.setAttribute('data-patient-id', patientId);
