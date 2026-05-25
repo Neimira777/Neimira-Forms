@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -310,23 +308,35 @@
       }
     }
 
-    // ── Listen for Rose's messages ──
-    function setupDIDMessageListener() {
-      if (window.DID_AGENTS_API) {
-        window.DID_AGENTS_API.events.on('agent-message', (data) => {
-          const text = data?.content || data?.message || data?.text || '';
-          console.log('Rose said:', text);
-          const match = text.match(/PLAY_MUSIC:([^\n]+)/);
-          if (match && spotifyDeviceId) {
-            const query = match[1].trim();
-            console.log('Music trigger detected:', query);
-            spotifyPlayBySearch(query);
-          }
-        });
-        console.log('D-ID message listener set up');
-      } else {
-        setTimeout(setupDIDMessageListener, 1000);
+    // ── Check text for PLAY_MUSIC signal ──
+    function handleRoseMessage(text) {
+      if (!text || typeof text !== 'string') return;
+      console.log('Rose said:', text);
+      const match = text.match(/PLAY_MUSIC:([^\n]+)/);
+      if (match && spotifyDeviceId) {
+        const query = match[1].trim();
+        console.log('Music trigger detected:', query);
+        spotifyPlayBySearch(query);
       }
+    }
+
+    // ── Listen for Rose's messages via window.message (D-ID iframe events) ──
+    function setupDIDMessageListener() {
+      window.addEventListener('message', (event) => {
+        const data = event.data;
+        if (!data) return;
+
+        // D-ID can send messages in several shapes — check all known paths
+        const text =
+          data?.payload?.text ||
+          data?.payload?.message ||
+          data?.content ||
+          data?.message ||
+          data?.text || '';
+
+        handleRoseMessage(text);
+      });
+      console.log('D-ID message listener set up');
     }
 
     // ── Controls ──
@@ -378,3 +388,4 @@
 
 </body>
 </html>
+
