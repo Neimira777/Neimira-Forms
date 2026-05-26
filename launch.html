@@ -16,145 +16,60 @@
       align-items: center;
       padding: 40px 20px;
     }
-    .logo-area {
-      text-align: center;
-      margin-bottom: 40px;
-    }
+    .logo-area { text-align: center; margin-bottom: 40px; }
     .logo-title {
-      font-size: 28px;
-      font-weight: 700;
-      letter-spacing: 6px;
-      text-transform: uppercase;
-      color: #1A237E;
+      font-size: 28px; font-weight: 700; letter-spacing: 6px;
+      text-transform: uppercase; color: #1A237E;
     }
     .logo-tagline {
-      font-size: 12px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: #00BCD4;
-      margin-top: 6px;
+      font-size: 12px; letter-spacing: 3px;
+      text-transform: uppercase; color: #00BCD4; margin-top: 6px;
     }
-    .mode-container {
-      width: 100%;
-      max-width: 600px;
-    }
+    .mode-container { width: 100%; max-width: 600px; }
     .mode-card {
-      background: white;
-      border-radius: 20px;
-      padding: 40px;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-      text-align: center;
+      background: white; border-radius: 20px; padding: 40px;
+      margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center;
     }
     .mode-card h2 {
-      color: #1A237E;
-      font-size: 20px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      margin-bottom: 10px;
+      color: #1A237E; font-size: 20px; letter-spacing: 2px;
+      text-transform: uppercase; margin-bottom: 10px;
     }
-    .mode-card p {
-      color: #666;
-      font-size: 14px;
-      margin-bottom: 24px;
-      line-height: 1.6;
-    }
-    .patient-list {
-      display: none;
-      flex-direction: column;
-      gap: 12px;
-      margin-top: 16px;
-    }
+    .mode-card p { color: #666; font-size: 14px; margin-bottom: 24px; line-height: 1.6; }
+    .patient-list { display: none; flex-direction: column; gap: 12px; margin-top: 16px; }
     .patient-btn {
       background: linear-gradient(135deg, #00BCD4, #2979FF);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      padding: 16px 24px;
-      font-size: 16px;
-      font-weight: 600;
-      letter-spacing: 1px;
-      cursor: pointer;
+      color: white; border: none; border-radius: 12px; padding: 16px 24px;
+      font-size: 16px; font-weight: 600; letter-spacing: 1px; cursor: pointer;
       transition: transform 0.2s, opacity 0.2s;
     }
-    .patient-btn:hover {
-      transform: translateY(-2px);
-      opacity: 0.9;
-    }
+    .patient-btn:hover { transform: translateY(-2px); opacity: 0.9; }
     .visit-btn {
       background: linear-gradient(135deg, #00BCD4, #2979FF);
-      color: white;
-      border: none;
-      border-radius: 16px;
-      padding: 20px 48px;
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: transform 0.2s, opacity 0.2s;
-      width: 100%;
+      color: white; border: none; border-radius: 16px; padding: 20px 48px;
+      font-size: 18px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+      cursor: pointer; transition: transform 0.2s, opacity 0.2s; width: 100%;
     }
-    .visit-btn:hover {
-      transform: translateY(-2px);
-      opacity: 0.9;
-    }
-    .loading {
-      color: #999;
-      font-size: 14px;
-      margin-top: 12px;
-    }
-    .divider {
-      text-align: center;
-      color: #ccc;
-      font-size: 12px;
-      letter-spacing: 2px;
-      margin: 10px 0;
-    }
+    .visit-btn:hover { transform: translateY(-2px); opacity: 0.9; }
+    .loading { color: #999; font-size: 14px; margin-top: 12px; }
+    .divider { text-align: center; color: #ccc; font-size: 12px; letter-spacing: 2px; margin: 10px 0; }
     #spotify-player {
-      display: none;
-      background: white;
-      border-radius: 20px;
-      padding: 20px 24px;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-      text-align: center;
+      display: none; background: white; border-radius: 20px; padding: 20px 24px;
+      margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center;
     }
     #spotify-player.visible { display: block; }
     #spotify-player h3 {
-      color: #1A237E;
-      font-size: 13px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      margin-bottom: 12px;
+      color: #1A237E; font-size: 13px; letter-spacing: 2px;
+      text-transform: uppercase; margin-bottom: 12px;
     }
-    #now-playing {
-      color: #666;
-      font-size: 13px;
-      margin-bottom: 12px;
-      min-height: 18px;
-    }
-    .spotify-controls {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-    }
+    #now-playing { color: #666; font-size: 13px; margin-bottom: 12px; min-height: 18px; }
+    .spotify-controls { display: flex; justify-content: center; gap: 12px; }
     .spotify-btn {
       background: linear-gradient(135deg, #1DB954, #1aa34a);
-      color: white;
-      border: none;
-      border-radius: 10px;
-      padding: 10px 20px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: opacity 0.2s;
+      color: white; border: none; border-radius: 10px; padding: 10px 20px;
+      font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity 0.2s;
     }
     .spotify-btn:hover { opacity: 0.85; }
-    .spotify-btn.secondary {
-      background: #eee;
-      color: #333;
-    }
+    .spotify-btn.secondary { background: #eee; color: #333; }
   </style>
 </head>
 <body>
@@ -177,16 +92,13 @@
   </div>
 
   <div class="mode-container" id="selectionScreen">
-
     <div class="mode-card">
       <h2>Facility</h2>
       <p>Select a patient to begin their session with Rose.</p>
       <div class="patient-list" id="patientList">
         <div class="loading">Loading patients...</div>
       </div>
-      <button class="visit-btn" id="loadPatientsBtn" onclick="loadPatients()">
-        Load Patients
-      </button>
+      <button class="visit-btn" id="loadPatientsBtn" onclick="loadPatients()">Load Patients</button>
     </div>
 
     <div class="divider">— OR —</div>
@@ -194,11 +106,8 @@
     <div class="mode-card">
       <h2>Home</h2>
       <p>Welcome back. Rose is ready for your visit.</p>
-      <button class="visit-btn" onclick="launchRose('recMLLC4fJHBUhE5w')">
-        Visit with Rose 🌹
-      </button>
+      <button class="visit-btn" onclick="launchRose('recMLLC4fJHBUhE5w')">Visit with Rose 🌹</button>
     </div>
-
   </div>
 
   <script type="module"
@@ -221,14 +130,14 @@
     let spotifyDeviceId = null;
     let currentPatientId = null;
     let isPlaying = false;
-    let lastSeenText = '';
+    let musicPollInterval = null;
 
     // ── Spotify SDK ready ──
     window.onSpotifyWebPlaybackSDKReady = () => {
       console.log('Spotify SDK ready');
     };
 
-    // ── Initialize Spotify for a patient ──
+    // ── Initialize Spotify ──
     async function initSpotify(patientId) {
       try {
         const res = await fetch('https://rose-proxy.vercel.app/api/spotify-token', {
@@ -237,10 +146,7 @@
           body: JSON.stringify({ patientId })
         });
         const data = await res.json();
-        if (!data.access_token) {
-          console.log('No Spotify token for patient');
-          return;
-        }
+        if (!data.access_token) { console.log('No Spotify token'); return; }
 
         spotifyPlayer = new Spotify.Player({
           name: 'Rose — Neimira',
@@ -262,8 +168,7 @@
             document.getElementById('now-playing').textContent =
               track.name + ' — ' + track.artists.map(a => a.name).join(', ');
           }
-          document.getElementById('playPauseBtn').textContent =
-            isPlaying ? '⏸ Pause' : '▶ Play';
+          document.getElementById('playPauseBtn').textContent = isPlaying ? '⏸ Pause' : '▶ Play';
         });
 
         spotifyPlayer.connect();
@@ -290,119 +195,44 @@
         );
         const searchData = await searchRes.json();
         const uri = searchData.tracks?.items?.[0]?.uri;
-        if (!uri) {
-          console.log('No track found for:', query);
-          return;
-        }
+        if (!uri) { console.log('No track found for:', query); return; }
 
         await fetch('https://api.spotify.com/v1/me/player/play?device_id=' + spotifyDeviceId, {
           method: 'PUT',
-          headers: {
-            'Authorization': 'Bearer ' + access_token,
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Authorization': 'Bearer ' + access_token, 'Content-Type': 'application/json' },
           body: JSON.stringify({ uris: [uri] })
         });
 
-        console.log('Playing:', query);
+        console.log('Now playing:', query);
       } catch (e) {
-        console.error('Spotify search play error:', e);
+        console.error('Spotify play error:', e);
       }
     }
 
-    // ── Check text for PLAY_MUSIC signal ──
-    function handleRoseMessage(text) {
-      if (!text || typeof text !== 'string') return;
-      if (text === lastSeenText) return;
-      lastSeenText = text;
-      console.log('Rose said:', text);
-      const match = text.match(/PLAY_MUSIC:([^\n]+)/);
-      if (match && spotifyDeviceId) {
-        const query = match[1].trim();
-        console.log('Music trigger detected:', query);
-        spotifyPlayBySearch(query);
-      }
-    }
-
-    // ── Connect to D-ID events API ──
-    function setupDIDEventListeners(api) {
-      const eventNames = [
-        'agent-answer', 'agent-message', 'answer', 'message',
-        'chat-message', 'agent-response', 'transcript'
-      ];
-
-      eventNames.forEach(eventName => {
+    // ── Poll music queue every 2 seconds ──
+    function startMusicQueuePolling(patientId) {
+      if (musicPollInterval) clearInterval(musicPollInterval);
+      musicPollInterval = setInterval(async () => {
         try {
-          api.events.on(eventName, (data) => {
-            console.log(`D-ID [${eventName}]:`, JSON.stringify(data).substring(0, 300));
-            const text =
-              data?.answer ||
-              data?.text ||
-              data?.message ||
-              data?.content ||
-              data?.transcript || '';
-            handleRoseMessage(text);
-          });
-        } catch(e) {
-          // silently skip unsupported event names
+          const res = await fetch(
+            'https://rose-proxy.vercel.app/api/music-queue?patientId=' + patientId
+          );
+          const data = await res.json();
+          if (data.query) {
+            console.log('Music queue triggered:', data.query);
+            spotifyPlayBySearch(data.query);
+          }
+        } catch (e) {
+          console.error('Music queue poll error:', e);
         }
-      });
-
-      // Also log ALL events if api.events supports wildcard
-      try {
-        api.events.on('*', (eventName, data) => {
-          console.log(`D-ID wildcard [${eventName}]:`, JSON.stringify(data).substring(0, 200));
-        });
-      } catch(e) {}
-
-      console.log('D-ID events connected');
-    }
-
-    // ── Poll for D-ID agent API ──
-    function setupDIDMessageListener() {
-      let attempts = 0;
-      const checkForAgentAPI = setInterval(() => {
-        attempts++;
-        const api = window.__didAgentApi || window.DID_AGENTS_API || window.didAgentsApi;
-        if (api && api.events) {
-          clearInterval(checkForAgentAPI);
-          console.log('D-ID agent API found, keys:', Object.keys(api));
-          setupDIDEventListeners(api);
-        } else if (attempts > 40) {
-          clearInterval(checkForAgentAPI);
-          console.log('D-ID agent API not found after 20s');
-        }
-      }, 500);
-
-      // Window message fallback
-      window.addEventListener('message', (event) => {
-        const data = event.data;
-        if (!data) return;
-        if (typeof data === 'object') {
-          console.log('MESSAGE EVENT:', JSON.stringify(data).substring(0, 300));
-        }
-        const text =
-          data?.payload?.text ||
-          data?.payload?.message ||
-          data?.content ||
-          data?.message ||
-          data?.text || '';
-        handleRoseMessage(text);
-      });
-
-      console.log('D-ID message listener set up');
+      }, 2000);
+      console.log('Music queue polling started');
     }
 
     // ── Controls ──
-    function spotifyPlayPause() {
-      if (spotifyPlayer) spotifyPlayer.togglePlay();
-    }
-    function spotifyNext() {
-      if (spotifyPlayer) spotifyPlayer.nextTrack();
-    }
-    function spotifyPrevious() {
-      if (spotifyPlayer) spotifyPlayer.previousTrack();
-    }
+    function spotifyPlayPause() { if (spotifyPlayer) spotifyPlayer.togglePlay(); }
+    function spotifyNext() { if (spotifyPlayer) spotifyPlayer.nextTrack(); }
+    function spotifyPrevious() { if (spotifyPlayer) spotifyPlayer.previousTrack(); }
 
     // ── Load patients ──
     async function loadPatients() {
@@ -422,7 +252,7 @@
           list.appendChild(btn);
         });
       } catch (e) {
-        list.innerHTML = '<div class="loading">Error loading patients. Please try again.</div>';
+        list.innerHTML = '<div class="loading">Error loading patients.</div>';
       }
     }
 
@@ -430,16 +260,12 @@
     function launchRose(patientId) {
       currentPatientId = patientId;
       initSpotify(patientId);
+      startMusicQueuePolling(patientId);
       const agent = document.querySelector('[data-name="did-agent"]');
-      if (agent) {
-        agent.setAttribute('data-patient-id', patientId);
-      }
+      if (agent) agent.setAttribute('data-patient-id', patientId);
       const event = new CustomEvent('did-agent:open');
       window.dispatchEvent(event);
     }
-
-    // ── Initialize on page load ──
-    setupDIDMessageListener();
   </script>
 
 </body>
