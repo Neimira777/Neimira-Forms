@@ -257,14 +257,13 @@
     }
 
     // ── Launch Rose ──
+    // Note: CustomEvent removed — let D-ID handle its own session naturally.
+    // Click "Visit with Rose" first to initialize Spotify + polling,
+    // then click the D-ID widget button to open Rose.
     function launchRose(patientId) {
       currentPatientId = patientId;
       initSpotify(patientId);
       startMusicQueuePolling(patientId);
-      const agent = document.querySelector('[data-name="did-agent"]');
-      if (agent) agent.setAttribute('data-patient-id', patientId);
-      const event = new CustomEvent('did-agent:open');
-      window.dispatchEvent(event);
     }
   </script>
 
