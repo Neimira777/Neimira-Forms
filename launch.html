@@ -321,18 +321,15 @@
       }
     }
 
-    // ── Listen for Rose's messages — debug mode logs all events ──
+    // ── Listen for D-ID agent API events ──
     function setupDIDMessageListener() {
+      // Also keep window.message listener as fallback
       window.addEventListener('message', (event) => {
-        // Debug: log every message event so we can see what D-ID sends
-        if (event.data && typeof event.data === 'object') {
-          console.log('MESSAGE EVENT:', JSON.stringify(event.data).substring(0, 300));
-        }
-
         const data = event.data;
         if (!data) return;
-
-        // D-ID can send messages in several shapes — check all known paths
+        if (typeof event.data === 'object') {
+          console.log('MESSAGE EVENT:', JSON.stringify(event.data).substring(0, 300));
+        }
         const text =
           data?.payload?.text ||
           data?.payload?.message ||
@@ -341,9 +338,40 @@
           data?.message ||
           data?.text ||
           data?.agent_message || '';
-
         handleRoseMessage(text);
       });
+
+      // Poll for D-ID agent API (fabio mode exposes it on window)
+      let attempts = 0;
+      const checkForAgentAPI = setInterval(() => {
+        attempts++;
+        const api = window.__didAgentApi || window.DID_AGENTS_API || window.didAgentsApi;
+        if (api) {
+          clearInterval(checkForAgentAPI);
+          console.log('D-ID agent API found:', Object.keys(api));
+
+          // Try all known event names
+          const eventNames = ['agent-answer', 'agent-message', 'answer', 'message', 'chat-message'];
+          eventNames.forEach(eventName => {
+            try {
+              api.on(eventName, (data) => {
+                console.log(`D-ID event [${eventName}]:`, JSON.stringify(data).substring(0, 300));
+                const text =
+                  data?.answer ||
+                  data?.text ||
+                  data?.message ||
+                  data?.content || '';
+                handleRoseMessage(text);
+              });
+            } catch(e) {}
+          });
+          console.log('D-ID agent API connected, listening for events');
+        } else if (attempts > 20) {
+          clearInterval(checkForAgentAPI);
+          console.log('D-ID agent API not found after 10s');
+        }
+      }, 500);
+
       console.log('D-ID message listener set up');
     }
 
