@@ -321,9 +321,14 @@
       }
     }
 
-    // ── Listen for Rose's messages via window message events ──
+    // ── Listen for Rose's messages — debug mode logs all events ──
     function setupDIDMessageListener() {
       window.addEventListener('message', (event) => {
+        // Debug: log every message event so we can see what D-ID sends
+        if (event.data && typeof event.data === 'object') {
+          console.log('MESSAGE EVENT:', JSON.stringify(event.data).substring(0, 300));
+        }
+
         const data = event.data;
         if (!data) return;
 
@@ -331,9 +336,11 @@
         const text =
           data?.payload?.text ||
           data?.payload?.message ||
+          data?.payload?.agent_message ||
           data?.content ||
           data?.message ||
-          data?.text || '';
+          data?.text ||
+          data?.agent_message || '';
 
         handleRoseMessage(text);
       });
@@ -385,9 +392,10 @@
       window.dispatchEvent(event);
     }
 
-    // ── Set up message listener on page load (not on launch) ──
+    // ── Set up message listener on page load ──
     setupDIDMessageListener();
   </script>
 
 </body>
 </html>
+
