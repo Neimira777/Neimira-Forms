@@ -313,7 +313,7 @@
     // ── Check text for PLAY_MUSIC signal ──
     function handleRoseMessage(text) {
       if (!text || typeof text !== 'string') return;
-      if (text === lastSeenText) return; // avoid duplicate triggers
+      if (text === lastSeenText) return;
       lastSeenText = text;
       console.log('Rose said:', text);
       const match = text.match(/PLAY_MUSIC:([^\n]+)/);
@@ -324,42 +324,57 @@
       }
     }
 
-    // ── DOM mutation observer — watches D-ID widget text directly ──
-    function setupDOMObserver() {
-      const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-          mutation.addedNodes.forEach((node) => {
-            if (node.nodeType === Node.TEXT_NODE) {
-              const text = node.textContent?.trim();
-              if (text) handleRoseMessage(text);
-            }
-            if (node.nodeType === Node.ELEMENT_NODE) {
-              const text = node.innerText?.trim();
-              if (text) {
-                console.log('DOM node added text:', text.substring(0, 100));
-                handleRoseMessage(text);
-              }
-            }
+    // ── Connect to D-ID events API ──
+    function setupDIDEventListeners(api) {
+      const eventNames = [
+        'agent-answer', 'agent-message', 'answer', 'message',
+        'chat-message', 'agent-response', 'transcript'
+      ];
+
+      eventNames.forEach(eventName => {
+        try {
+          api.events.on(eventName, (data) => {
+            console.log(`D-ID [${eventName}]:`, JSON.stringify(data).substring(0, 300));
+            const text =
+              data?.answer ||
+              data?.text ||
+              data?.message ||
+              data?.content ||
+              data?.transcript || '';
+            handleRoseMessage(text);
           });
-          // Also check for text changes in existing nodes
-          if (mutation.type === 'characterData') {
-            const text = mutation.target.textContent?.trim();
-            if (text) handleRoseMessage(text);
-          }
+        } catch(e) {
+          // silently skip unsupported event names
+        }
+      });
+
+      // Also log ALL events if api.events supports wildcard
+      try {
+        api.events.on('*', (eventName, data) => {
+          console.log(`D-ID wildcard [${eventName}]:`, JSON.stringify(data).substring(0, 200));
         });
-      });
+      } catch(e) {}
 
-      observer.observe(document.body, {
-        childList: true,
-        subtree: true,
-        characterData: true
-      });
-
-      console.log('DOM mutation observer set up');
+      console.log('D-ID events connected');
     }
 
-    // ── Window message listener (fallback) ──
-    function setupMessageListener() {
+    // ── Poll for D-ID agent API ──
+    function setupDIDMessageListener() {
+      let attempts = 0;
+      const checkForAgentAPI = setInterval(() => {
+        attempts++;
+        const api = window.__didAgentApi || window.DID_AGENTS_API || window.didAgentsApi;
+        if (api && api.events) {
+          clearInterval(checkForAgentAPI);
+          console.log('D-ID agent API found, keys:', Object.keys(api));
+          setupDIDEventListeners(api);
+        } else if (attempts > 40) {
+          clearInterval(checkForAgentAPI);
+          console.log('D-ID agent API not found after 20s');
+        }
+      }, 500);
+
+      // Window message fallback
       window.addEventListener('message', (event) => {
         const data = event.data;
         if (!data) return;
@@ -369,13 +384,13 @@
         const text =
           data?.payload?.text ||
           data?.payload?.message ||
-          data?.payload?.agent_message ||
           data?.content ||
           data?.message ||
-          data?.text ||
-          data?.agent_message || '';
+          data?.text || '';
         handleRoseMessage(text);
       });
+
+      console.log('D-ID message listener set up');
     }
 
     // ── Controls ──
@@ -423,11 +438,9 @@
       window.dispatchEvent(event);
     }
 
-    // ── Initialize listeners on page load ──
-    setupMessageListener();
-    setupDOMObserver();
+    // ── Initialize on page load ──
+    setupDIDMessageListener();
   </script>
 
 </body>
 </html>
-
