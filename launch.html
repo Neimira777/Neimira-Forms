@@ -549,6 +549,9 @@
     let isSpeaking = false;
     let conversationHistory = [];
 
+    // Cancel any browser TTS immediately
+    window.speechSynthesis?.cancel();
+
     // ── Spotify SDK ──
     window.onSpotifyWebPlaybackSDKReady = () => {
       console.log('Spotify SDK ready');
@@ -694,37 +697,7 @@
       }
     }
 
-    // ── Text to speech (browser TTS as fallback until D-ID connected) ──
-    function speakText(text) {
-      if (!text) return;
-
-      setRoseSpeaking(true);
-      duckMusic();
-
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.88;
-      utterance.pitch = 1.05;
-      utterance.volume = 1;
-
-      // Try to use a warm female voice
-      const voices = speechSynthesis.getVoices();
-      const preferred = voices.find(v =>
-        v.name.includes('Samantha') ||
-        v.name.includes('Karen') ||
-        v.name.includes('Victoria') ||
-        v.name.includes('female') ||
-        (v.lang === 'en-US' && v.name.includes('Google'))
-      );
-      if (preferred) utterance.voice = preferred;
-
-      utterance.onend = () => {
-        setRoseSpeaking(false);
-        restoreMusic();
-        setTimeout(() => startListening(), 500);
-      };
-
-      speechSynthesis.speak(utterance);
-    }
+    // Browser TTS removed — D-ID handles all voice output
 
     // ── State indicators ──
     function setRoseSpeaking(speaking) {
