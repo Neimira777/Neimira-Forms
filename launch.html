@@ -436,11 +436,13 @@
     }
     .music-ctrl.play:hover { background: #22c55e; }
 
-    /* D-ID widget hidden */
+    /* D-ID widget — visible and positioned full screen */
     [data-name="did-agent"] {
-      display: none !important;
-      opacity: 0 !important;
-      pointer-events: none !important;
+      position: fixed !important;
+      inset: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      z-index: 2 !important;
     }
 
     .loading-text {
