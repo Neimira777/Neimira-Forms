@@ -619,7 +619,7 @@
       if (spotifyPlayer) spotifyPlayer.setVolume(0.35); // restore to 35% when Rose finishes
     }
 
-    // ── Play by search ──
+    // ── Play by search (with artist variety) ──
     async function spotifyPlayBySearch(query) {
       try {
         const tokenRes = await fetch('https://rose-proxy.vercel.app/api/spotify-token', {
@@ -631,13 +631,43 @@
         const access_token = tokenData.access_token;
         if (!access_token) return;
 
-        const searchRes = await fetch(
-          'https://api.spotify.com/v1/search?q=' + encodeURIComponent(query) + '&type=track&limit=1',
+        let uri = null;
+
+        // Try artist search first — get top tracks for variety
+        const artistRes = await fetch(
+          'https://api.spotify.com/v1/search?q=' + encodeURIComponent(query) + '&type=artist&limit=1',
           { headers: { 'Authorization': 'Bearer ' + access_token } }
         );
-        const searchData = await searchRes.json();
-        const uri = searchData.tracks?.items?.[0]?.uri;
-        if (!uri) { console.log('No track found:', query); return; }
+        const artistData = await artistRes.json();
+        const artist = artistData.artists?.items?.[0];
+
+        if (artist) {
+          const topTracksRes = await fetch(
+            'https://api.spotify.com/v1/artists/' + artist.id + '/top-tracks?market=US',
+            { headers: { 'Authorization': 'Bearer ' + access_token } }
+          );
+          const topTracksData = await topTracksRes.json();
+          const tracks = topTracksData.tracks || [];
+          if (tracks.length > 0) {
+            const randomTrack = tracks[Math.floor(Math.random() * Math.min(tracks.length, 10))];
+            uri = randomTrack.uri;
+            console.log('Playing artist track:', randomTrack.name, 'by', artist.name);
+          }
+        }
+
+        // Fall back to track search if artist not found
+        if (!uri) {
+          const searchRes = await fetch(
+            'https://api.spotify.com/v1/search?q=' + encodeURIComponent(query) + '&type=track&limit=5',
+            { headers: { 'Authorization': 'Bearer ' + access_token } }
+          );
+          const searchData = await searchRes.json();
+          const tracks = searchData.tracks?.items || [];
+          if (tracks.length === 0) { console.log('No track found:', query); return; }
+          const randomTrack = tracks[Math.floor(Math.random() * tracks.length)];
+          uri = randomTrack.uri;
+          console.log('Playing track:', randomTrack.name);
+        }
 
         await fetch('https://api.spotify.com/v1/me/player/play?device_id=' + spotifyDeviceId, {
           method: 'PUT',
@@ -645,7 +675,6 @@
           body: JSON.stringify({ uris: [uri] })
         });
 
-        console.log('Playing:', query);
       } catch (e) {
         console.error('Spotify play error:', e);
       }
