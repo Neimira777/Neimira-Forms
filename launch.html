@@ -199,13 +199,13 @@
     }
     .load-link:hover { color: var(--cyan); }
 
-    /* ── ROSE SCREEN ── */
-    #roseScreen {
+    /* ── JIM SCREEN ── */
+    #jimScreen {
       background: #000;
     }
 
     /* D-ID video fills entire screen */
-    #roseVideo {
+    #jimVideo {
       position: fixed;
       inset: 0;
       width: 100%;
@@ -226,7 +226,7 @@
     }
 
     /* Top bar — Neimira branding */
-    .rose-topbar {
+    .jim-topbar {
       position: fixed;
       top: 0;
       left: 0;
@@ -237,7 +237,7 @@
       justify-content: space-between;
       z-index: 10;
     }
-    .rose-logo {
+    .jim-logo {
       font-family: 'Cormorant Garamond', serif;
       font-size: 22px;
       font-weight: 300;
@@ -474,18 +474,18 @@
 
     <div class="divider">— or —</div>
 
-    <button class="home-btn" onclick="launchRose('recMLLC4fJHBUhE5w', null)">
-      Visit with Rose 🌹
+    <button class="home-btn" onclick="launchJim('recMLLC4fJHBUhE5w')">
+      Visit with Jim 🪑
     </button>
   </div>
 
-  <!-- ── ROSE SCREEN ── -->
-  <div class="screen hidden" id="roseScreen">
-    <video id="roseVideo" autoplay playsinline muted></video>
+  <!-- ── JIM SCREEN ── -->
+  <div class="screen hidden" id="jimScreen">
+    <video id="jimVideo" autoplay playsinline muted></video>
     <div class="vignette"></div>
 
-    <div class="rose-topbar">
-      <div class="rose-logo">Neimira</div>
+    <div class="jim-topbar">
+      <div class="jim-logo">Neimira</div>
       <button class="end-btn" onclick="endSession()">End Visit</button>
     </div>
 
@@ -507,7 +507,7 @@
         <div class="sound-bar"></div>
         <div class="sound-bar"></div>
       </div>
-      <div class="speaking-label">Rose is speaking</div>
+      <div class="speaking-label">Jim is speaking</div>
     </div>
 
     <div id="musicBar">
@@ -524,17 +524,13 @@
     </div>
   </div>
 
-  <!-- D-ID widget (hidden — used for session only) -->
-  <!-- D-ID agent — agent ID set from URL parameter before load -->
+  <!-- ── FIX 1: Jim's correct agent ID hardcoded — D-ID script loads Jim directly ── -->
   <script>
-    // Read agent ID from URL — defaults to Rose
-    const urlParams = new URLSearchParams(window.location.search);
-    const agentId = urlParams.get('agent') || 'v2_agt_FYy8qcBT';
     document.write('<scr' + 'ipt type="module" ' +
       'src="https://agent.d-id.com/v2/index.js" ' +
       'data-mode="fabio" ' +
       'data-client-key="ck_-MqtRhwe5B0Gqmpm3oow5" ' +
-      'data-agent-id="' + agentId + '" ' +
+      'data-agent-id="v2_agt_FYy8qcBT" ' +
       'data-name="did-agent" ' +
       'data-monitor="true" ' +
       'data-orientation="horizontal" ' +
@@ -546,16 +542,12 @@
 
   <script>
     // ── State ──
-    // Restore patientId from URL if redirected
     const _urlParams = new URLSearchParams(window.location.search);
     let currentPatientId = _urlParams.get('patient') || null;
 
-    // Auto-launch if patient ID was passed in URL
-    window.addEventListener('load', () => {
-      if (currentPatientId) {
-        setTimeout(() => launchRose(currentPatientId, 'Male'), 500);
-      }
-    });
+    // ── FIX 2: Auto-launch block REMOVED — no more redirect loop ──
+    // User clicks the widget manually; no window.addEventListener('load', ...) here.
+
     let spotifyPlayer = null;
     let spotifyDeviceId = null;
     let isPlaying = false;
@@ -574,13 +566,13 @@
     };
 
     // ── Show/hide screens ──
-    function showRoseScreen() {
+    function showJimScreen() {
       document.getElementById('selectionScreen').classList.add('hidden');
-      document.getElementById('roseScreen').classList.remove('hidden');
+      document.getElementById('jimScreen').classList.remove('hidden');
     }
 
     function showSelectionScreen() {
-      document.getElementById('roseScreen').classList.add('hidden');
+      document.getElementById('jimScreen').classList.add('hidden');
       document.getElementById('selectionScreen').classList.remove('hidden');
     }
 
@@ -596,9 +588,9 @@
         if (!data.access_token) { console.log('No Spotify token'); return; }
 
         spotifyPlayer = new Spotify.Player({
-          name: 'Rose — Neimira',
+          name: 'Neimira — Companion',
           getOAuthToken: cb => cb(data.access_token),
-          volume: 0.35 // start at 35% — background music level
+          volume: 0.35
         });
 
         spotifyPlayer.addListener('ready', ({ device_id }) => {
@@ -626,11 +618,11 @@
 
     // ── Audio ducking ──
     function duckMusic() {
-      if (spotifyPlayer) spotifyPlayer.setVolume(0.1); // fade to 10% when Rose speaks
+      if (spotifyPlayer) spotifyPlayer.setVolume(0.1);
     }
 
     function restoreMusic() {
-      if (spotifyPlayer) spotifyPlayer.setVolume(0.35); // restore to 35% when Rose finishes
+      if (spotifyPlayer) spotifyPlayer.setVolume(0.35);
     }
 
     // ── Play by search (with artist variety) ──
@@ -647,7 +639,6 @@
 
         let uri = null;
 
-        // Try artist search first — get top tracks for variety
         const artistRes = await fetch(
           'https://api.spotify.com/v1/search?q=' + encodeURIComponent(query) + '&type=artist&limit=1',
           { headers: { 'Authorization': 'Bearer ' + access_token } }
@@ -669,7 +660,6 @@
           }
         }
 
-        // Fall back to track search if artist not found
         if (!uri) {
           const searchRes = await fetch(
             'https://api.spotify.com/v1/search?q=' + encodeURIComponent(query) + '&type=track&limit=5',
@@ -714,8 +704,8 @@
     function spotifyNext() { if (spotifyPlayer) spotifyPlayer.nextTrack(); }
     function spotifyPrevious() { if (spotifyPlayer) spotifyPlayer.previousTrack(); }
 
-    // ── Send message to Rose (chat.js) ──
-    async function sendToRose(userText) {
+    // ── Send message to Jim (chat.js) ──
+    async function sendToJim(userText) {
       try {
         conversationHistory.push({ role: 'user', content: userText });
 
@@ -730,9 +720,7 @@
         const data = await res.json();
         const reply = data.content || '';
 
-        // Strip PLAY_MUSIC signal from spoken text
         const spokenReply = reply.replace(/PLAY_MUSIC:[^\n]+/g, '').trim();
-
         conversationHistory.push({ role: 'assistant', content: reply });
 
         return spokenReply;
@@ -742,10 +730,8 @@
       }
     }
 
-    // Browser TTS removed — D-ID handles all voice output
-
     // ── State indicators ──
-    function setRoseSpeaking(speaking) {
+    function setJimSpeaking(speaking) {
       isSpeaking = speaking;
       document.getElementById('speakingIndicator').classList.toggle('active', speaking);
       document.getElementById('listenIndicator').classList.toggle('active', !speaking);
@@ -778,9 +764,7 @@
         const transcript = event.results[0][0].transcript;
         console.log('Patient said:', transcript);
         setListening(false);
-        // Send to chat.js for music queue detection only
-        // D-ID handles the actual voice response
-        await sendToRose(transcript);
+        await sendToJim(transcript);
       };
 
       recognition.onerror = (e) => {
@@ -804,11 +788,8 @@
     }
 
     // ── Auto-greeting ──
-    // Browser TTS disabled — D-ID handles voice
     async function autoGreet() {
-      // Just send to chat.js to prime the session cache
-      // D-ID handles the actual greeting via its own session
-      await sendToRose('Hello');
+      await sendToJim('Hello');
     }
 
     // ── Load patients ──
@@ -824,7 +805,7 @@
           const btn = document.createElement('button');
           btn.className = 'patient-btn';
           btn.textContent = patient.name;
-          btn.onclick = () => launchRose(patient.id, patient.gender);
+          btn.onclick = () => launchJim(patient.id);
           list.appendChild(btn);
         });
       } catch (e) {
@@ -832,45 +813,15 @@
       }
     }
 
-    // ── Agent IDs ──
-    const AGENT_ROSE = 'v2_agt_FYy8qcBT';
-    const AGENT_JIM  = 'v2_agt_FYy8qcBT';
+    // ── FIX 3: loadDIDAgent REMOVED — Jim's page always uses Jim's agent ──
+    // No redirect logic. No gender check. No loop possible.
 
-    // ── Set correct agent via URL reload if needed ──
-    function loadDIDAgent(gender) {
-      const isMale = gender && gender.toLowerCase().trim() === 'male';
-      const correctAgent = isMale ? AGENT_JIM : AGENT_ROSE;
-      const currentAgent = new URLSearchParams(window.location.search).get('agent') || AGENT_ROSE;
-
-      if (currentAgent !== correctAgent) {
-        // Reload with correct agent ID — D-ID needs this set before script loads
-        const url = new URL(window.location.href);
-        url.searchParams.set('agent', correctAgent);
-        url.searchParams.set('patient', currentPatientId);
-        window.location.href = url.toString();
-      } else {
-        console.log('Correct agent already loaded:', correctAgent);
-      }
-    }
-
-    // ── Launch Rose or Jim based on patient gender ──
-    async function launchRose(patientId, gender = 'Female') {
+    // ── Launch Jim ──
+    async function launchJim(patientId) {
       currentPatientId = patientId;
       conversationHistory = [];
 
-      // If gender not passed, fetch from Airtable
-      if (!gender) {
-        try {
-          const res = await fetch('https://rose-proxy.vercel.app/api/patients?id=' + patientId);
-          const data = await res.json();
-          gender = data.gender || 'Female';
-        } catch(e) {
-          gender = 'Female';
-        }
-      }
-
-      loadDIDAgent(gender);
-      showRoseScreen();
+      showJimScreen();
       await initSpotify(patientId);
       startMusicQueuePolling(patientId);
       setupSpeechRecognition();
