@@ -7,7 +7,7 @@
   <meta http-equiv="Expires" content="0">
   <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' blob: data:;">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Neimira — Rose</title>
+  <title>Neimira — Jim</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -529,7 +529,7 @@
   <script>
     // Read agent ID from URL — defaults to Rose
     const urlParams = new URLSearchParams(window.location.search);
-    const agentId = urlParams.get('agent') || 'v2_agt_LZBI4lcW';
+    const agentId = urlParams.get('agent') || 'v2_agt_FYy8qcBT';
     document.write('<scr' + 'ipt type="module" ' +
       'src="https://agent.d-id.com/v2/index.js" ' +
       'data-mode="fabio" ' +
@@ -549,6 +549,13 @@
     // Restore patientId from URL if redirected
     const _urlParams = new URLSearchParams(window.location.search);
     let currentPatientId = _urlParams.get('patient') || null;
+
+    // Auto-launch if patient ID was passed in URL
+    window.addEventListener('load', () => {
+      if (currentPatientId) {
+        setTimeout(() => launchRose(currentPatientId, 'Male'), 500);
+      }
+    });
     let spotifyPlayer = null;
     let spotifyDeviceId = null;
     let isPlaying = false;
@@ -826,7 +833,7 @@
     }
 
     // ── Agent IDs ──
-    const AGENT_ROSE = 'v2_agt_LZBI4lcW';
+    const AGENT_ROSE = 'v2_agt_FYy8qcBT';
     const AGENT_JIM  = 'v2_agt_FYy8qcBT';
 
     // ── Set correct agent via URL reload if needed ──
