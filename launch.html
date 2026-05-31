@@ -525,24 +525,30 @@
   </div>
 
   <!-- D-ID widget (hidden — used for session only) -->
-  <!-- Rose (female patients) -->
-  <script type="module" id="rose-agent"
-    src="https://agent.d-id.com/v2/index.js"
-    data-mode="fabio"
-    data-client-key="ck_-MqtRhwe5B0Gqmpm3oow5"
-    data-agent-id="v2_agt_LZBI4lcW"
-    data-name="did-agent"
-    data-monitor="true"
-    data-orientation="horizontal"
-    data-position="right"
-    data-open-mode="expanded">
+  <!-- D-ID agent — agent ID set from URL parameter before load -->
+  <script>
+    // Read agent ID from URL — defaults to Rose
+    const urlParams = new URLSearchParams(window.location.search);
+    const agentId = urlParams.get('agent') || 'v2_agt_LZBI4lcW';
+    document.write('<scr' + 'ipt type="module" ' +
+      'src="https://agent.d-id.com/v2/index.js" ' +
+      'data-mode="fabio" ' +
+      'data-client-key="ck_-MqtRhwe5B0Gqmpm3oow5" ' +
+      'data-agent-id="' + agentId + '" ' +
+      'data-name="did-agent" ' +
+      'data-monitor="true" ' +
+      'data-orientation="horizontal" ' +
+      'data-position="right" ' +
+      'data-open-mode="expanded"><\/scr' + 'ipt>');
   </script>
 
   <script src="https://sdk.scdn.co/spotify-player.js"></script>
 
   <script>
     // ── State ──
-    let currentPatientId = null;
+    // Restore patientId from URL if redirected
+    const _urlParams = new URLSearchParams(window.location.search);
+    let currentPatientId = _urlParams.get('patient') || null;
     let spotifyPlayer = null;
     let spotifyDeviceId = null;
     let isPlaying = false;
@@ -823,13 +829,21 @@
     const AGENT_ROSE = 'v2_agt_LZBI4lcW';
     const AGENT_JIM  = 'v2_agt_FYy8qcBT';
 
-    // ── Switch agent based on gender ──
+    // ── Set correct agent via URL reload if needed ──
     function loadDIDAgent(gender) {
       const isMale = gender && gender.toLowerCase().trim() === 'male';
-      const agentId = isMale ? AGENT_JIM : AGENT_ROSE;
-      console.log('Setting agent:', agentId, 'for gender:', gender);
-      const script = document.getElementById('rose-agent');
-      if (script) script.setAttribute('data-agent-id', agentId);
+      const correctAgent = isMale ? AGENT_JIM : AGENT_ROSE;
+      const currentAgent = new URLSearchParams(window.location.search).get('agent') || AGENT_ROSE;
+
+      if (currentAgent !== correctAgent) {
+        // Reload with correct agent ID — D-ID needs this set before script loads
+        const url = new URL(window.location.href);
+        url.searchParams.set('agent', correctAgent);
+        url.searchParams.set('patient', currentPatientId);
+        window.location.href = url.toString();
+      } else {
+        console.log('Correct agent already loaded:', correctAgent);
+      }
     }
 
     // ── Launch Rose or Jim based on patient gender ──
