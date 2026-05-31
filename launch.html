@@ -525,8 +525,18 @@
   </div>
 
   <!-- D-ID widget (hidden — used for session only) -->
-  <!-- D-ID agent loaded dynamically based on patient gender -->
-  <div id="did-agent-container"></div>
+  <!-- Rose (female patients) -->
+  <script type="module" id="rose-agent"
+    src="https://agent.d-id.com/v2/index.js"
+    data-mode="fabio"
+    data-client-key="ck_-MqtRhwe5B0Gqmpm3oow5"
+    data-agent-id="v2_agt_LZBI4lcW"
+    data-name="did-agent"
+    data-monitor="true"
+    data-orientation="horizontal"
+    data-position="right"
+    data-open-mode="expanded">
+  </script>
 
   <script src="https://sdk.scdn.co/spotify-player.js"></script>
 
@@ -810,30 +820,16 @@
     }
 
     // ── Agent IDs ──
-    const AGENT_ROSE = 'v2_agt_LZBI4lcW'; // Female
-    const AGENT_JIM  = 'v2_agt_FYy8qcBT'; // Male
-    const CLIENT_KEY = 'ck_-MqtRhwe5B0Gqmpm3oow5';
+    const AGENT_ROSE = 'v2_agt_LZBI4lcW';
+    const AGENT_JIM  = 'v2_agt_FYy8qcBT';
 
-    // ── Load D-ID agent dynamically based on gender ──
+    // ── Switch agent based on gender ──
     function loadDIDAgent(gender) {
-      const agentId = (gender && gender.toLowerCase().trim() === 'male') ? AGENT_JIM : AGENT_ROSE;
-      console.log('Loading agent:', agentId, 'for gender:', gender);
-
-      const container = document.getElementById('did-agent-container');
-      container.innerHTML = '';
-
-      const script = document.createElement('script');
-      script.type = 'module';
-      script.src = 'https://agent.d-id.com/v2/index.js';
-      script.setAttribute('data-mode', 'fabio');
-      script.setAttribute('data-client-key', CLIENT_KEY);
-      script.setAttribute('data-agent-id', agentId);
-      script.setAttribute('data-name', 'did-agent');
-      script.setAttribute('data-monitor', 'true');
-      script.setAttribute('data-orientation', 'horizontal');
-      script.setAttribute('data-position', 'right');
-      script.setAttribute('data-open-mode', 'expanded');
-      container.appendChild(script);
+      const isMale = gender && gender.toLowerCase().trim() === 'male';
+      const agentId = isMale ? AGENT_JIM : AGENT_ROSE;
+      console.log('Setting agent:', agentId, 'for gender:', gender);
+      const script = document.getElementById('rose-agent');
+      if (script) script.setAttribute('data-agent-id', agentId);
     }
 
     // ── Launch Rose or Jim based on patient gender ──
