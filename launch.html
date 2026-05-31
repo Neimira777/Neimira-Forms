@@ -474,7 +474,7 @@
 
     <div class="divider">— or —</div>
 
-    <button class="home-btn" onclick="launchRose('recMLLC4fJHBUhE5w')">
+    <button class="home-btn" onclick="launchRose('recMLLC4fJHBUhE5w', null)">
       Visit with Rose 🌹
     </button>
   </div>
@@ -816,7 +816,7 @@
 
     // ── Load D-ID agent dynamically based on gender ──
     function loadDIDAgent(gender) {
-      const agentId = (gender && gender.toLowerCase() === 'male') ? AGENT_JIM : AGENT_ROSE;
+      const agentId = (gender && gender.toLowerCase().trim() === 'male') ? AGENT_JIM : AGENT_ROSE;
       console.log('Loading agent:', agentId, 'for gender:', gender);
 
       const container = document.getElementById('did-agent-container');
