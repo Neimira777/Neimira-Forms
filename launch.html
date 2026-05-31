@@ -525,17 +525,8 @@
   </div>
 
   <!-- D-ID widget (hidden — used for session only) -->
-  <script type="module"
-    src="https://agent.d-id.com/v2/index.js"
-    data-mode="fabio"
-    data-client-key="ck_-MqtRhwe5B0Gqmpm3oow5"
-    data-agent-id="v2_agt_LZBI4lcW"
-    data-name="did-agent"
-    data-monitor="true"
-    data-orientation="horizontal"
-    data-position="right"
-    data-open-mode="expanded">
-  </script>
+  <!-- D-ID agent loaded dynamically based on patient gender -->
+  <div id="did-agent-container"></div>
 
   <script src="https://sdk.scdn.co/spotify-player.js"></script>
 
@@ -810,7 +801,7 @@
           const btn = document.createElement('button');
           btn.className = 'patient-btn';
           btn.textContent = patient.name;
-          btn.onclick = () => launchRose(patient.id);
+          btn.onclick = () => launchRose(patient.id, patient.gender);
           list.appendChild(btn);
         });
       } catch (e) {
@@ -818,18 +809,56 @@
       }
     }
 
-    // ── Launch Rose ──
-    async function launchRose(patientId) {
+    // ── Agent IDs ──
+    const AGENT_ROSE = 'v2_agt_LZBI4lcW'; // Female
+    const AGENT_JIM  = 'v2_agt_FYy8qcBT'; // Male
+    const CLIENT_KEY = 'ck_-MqtRhwe5B0Gqmpm3oow5';
+
+    // ── Load D-ID agent dynamically based on gender ──
+    function loadDIDAgent(gender) {
+      const agentId = (gender && gender.toLowerCase() === 'male') ? AGENT_JIM : AGENT_ROSE;
+      console.log('Loading agent:', agentId, 'for gender:', gender);
+
+      const container = document.getElementById('did-agent-container');
+      container.innerHTML = '';
+
+      const script = document.createElement('script');
+      script.type = 'module';
+      script.src = 'https://agent.d-id.com/v2/index.js';
+      script.setAttribute('data-mode', 'fabio');
+      script.setAttribute('data-client-key', CLIENT_KEY);
+      script.setAttribute('data-agent-id', agentId);
+      script.setAttribute('data-name', 'did-agent');
+      script.setAttribute('data-monitor', 'true');
+      script.setAttribute('data-orientation', 'horizontal');
+      script.setAttribute('data-position', 'right');
+      script.setAttribute('data-open-mode', 'expanded');
+      container.appendChild(script);
+    }
+
+    // ── Launch Rose or Jim based on patient gender ──
+    async function launchRose(patientId, gender = 'Female') {
       currentPatientId = patientId;
       conversationHistory = [];
 
+      // If gender not passed, fetch from Airtable
+      if (!gender) {
+        try {
+          const res = await fetch('https://rose-proxy.vercel.app/api/patients?id=' + patientId);
+          const data = await res.json();
+          gender = data.gender || 'Female';
+        } catch(e) {
+          gender = 'Female';
+        }
+      }
+
+      loadDIDAgent(gender);
       showRoseScreen();
       await initSpotify(patientId);
       startMusicQueuePolling(patientId);
       setupSpeechRecognition();
 
-      // Auto-greet after short delay
-      setTimeout(() => autoGreet(), 800);
+      setTimeout(() => autoGreet(), 1500);
     }
 
     // ── End session ──
